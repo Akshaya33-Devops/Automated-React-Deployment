@@ -1,0 +1,16 @@
+*{
+  margin:0;
+  padding: 0;
+}
+.table>:not(caption)>*>*{
+  border-bottom-width: 0px !important;
+  padding: 5px;
+}
+.btn-outline-secondary {
+  border-color: none !important;
+}
+table tfoot tr td:nth-child(4),
+table tfoot tr td:nth-child(5) {
+  padding-left: 0;
+  padding-right: 0;
+}
