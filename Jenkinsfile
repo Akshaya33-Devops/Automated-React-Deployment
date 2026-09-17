@@ -26,7 +26,7 @@ pipeline {
         stage('Build React App') {
             steps {
                 dir('react-source/project') {
-                    bat 'set CI=false && set DISABLE_ESLINT_PLUGIN=true && npm run build'
+                    bat 'set "CI=" && set "DISABLE_ESLINT_PLUGIN=true" && npm run build'
                 }
             }
         }
