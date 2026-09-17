@@ -1,16 +1,41 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = 'react-app'
+        EC2_HOST = 'ec2-user@NEW_EC2_PUBLIC_IP'
+        CONTAINER_NAME = 'react-container'
+    }
+
     stages {
+
         stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
 
+        stage('Install Dependencies') {
+            steps {
+                dir('react-source/project') {
+                    bat 'npm install'
+                }
+            }
+        }
+
+        stage('Build React App') {
+            steps {
+                dir('react-source/project') {
+                    bat 'npm run build'
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t react-app:jenkins .'
+                dir('react-source/project') {
+                    bat 'docker build -t react-app:jenkins .'
+                }
             }
         }
 
@@ -34,10 +59,10 @@ pipeline {
             steps {
                 sshagent(['ec2-ssh-key']) {
                     bat '''
-                        ssh -o StrictHostKeyChecking=no ec2-user@65.0.32.37 "docker pull akshayamanimuthu/react-app:dev && docker stop react-container || true && docker rm react-container || true && docker run -d -p 80:80 --name react-container --restart unless-stopped akshayamanimuthu/react-app:dev"
+                        ssh -o StrictHostKeyChecking=no %EC2_HOST% "docker pull akshayamanimuthu/react-app:dev && docker stop %CONTAINER_NAME% || true && docker rm %CONTAINER_NAME% || true && docker run -d -p 80:80 --name %CONTAINER_NAME% --restart unless-stopped akshayamanimuthu/react-app:dev"
                     '''
                 }
             }
         }
     }
-}
+}   
